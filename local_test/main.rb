@@ -93,7 +93,7 @@ get '/oauth/callback' do
   
   update_user_info(recent_media)
   cache_photo_data(recent_media)
-  @location_data = Photo.where(user_id: current_user.id).pluck(:latitude, :longitude)
+  @location_data = Photo.where(user_id: current_user.id).pluck(:thumbnail_url, :latitude, :longitude)
   erb :map
 end
 

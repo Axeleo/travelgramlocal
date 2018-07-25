@@ -13,34 +13,153 @@
     <h3>My Google Maps Demo</h3>
     <!--The div element for the map -->
     <div id="map"></div>
+    <!-- Add an input button to initiate the toggle method on the overlay. -->
+    <div id="floating-panel">
+      <input type="button" value="Toggle visibility" onclick="overlay.toggle();"></input>
+      <input type="button" value="Toggle DOM attachment" onclick="overlay.toggleDOM();"></input>
+    </div>
+
     <script>
-// Initialize and add the map
+
 function initMap() {
   var start = {lat: -20.462946176945, lng: -66.824035043868};
-  // The map, centered at start
   var map = new google.maps.Map(
-      document.getElementById('map'), {zoom: 4, center: start});
-  // The marker, positioned at start
-var locationData = <%= @location_data %>
-function generate_markers(locationData) {
-  for (let index = 0; index < locationData.length; index++) {
-    var latLng = new google.maps.LatLng(locationData[index][0],locationData[index][1])
-    var marker = new google.maps.Marker({
-      position: latLng,
-      map: map
-    })
+      document.getElementById('map'), {zoom: 12, center: start});
+
+  var srcImage = 'https://scontent.cdninstagram.com/vp/8d097beb672b9d3e2a2fcb04b21869d6/5BCF40A2/t51.2885-15/e35/s150x150/21577104_349757292144992_9053600006937772032_n.jpg'
+
+  var bounds = new google.maps.LatLngBounds(
+    new google.maps.LatLng(-20.462946176945, -66.824035043868),
+    new google.maps.LatLng(-20.062946176945, -66.024035043868));
+
+  var overlay;
+  photoLayer.prototype = new google.maps.OverlayView();
+
+  overlay = new photoLayer(bounds, srcImage, map);
+
+  var locationData = <%= @location_data %>
+  function generate_markers(locationData) {
+    for (let index = 0; index < locationData.length; index++) {
+      var latLng = new google.maps.LatLng(locationData[index][0],locationData[index][1])
+      var marker = new google.maps.Marker({
+        position: latLng,
+        map: map
+      })
+    }
   }
-}
   generate_markers(locationData)
+
+
+  /** constructor */
+  function photoLayer(bounds, image, map) {
+
+    // Initialize all properties.
+    this.bounds_ = bounds;
+    this.image_ = image;
+    this.map_ = map;
+
+    // Define a property to hold the image's div. We'll
+    // actually create this div upon receipt of the onAdd()
+    // method so we'll leave it null for now.
+    this.div_ = null;
+
+    // Explicitly call setMap on this overlay.
+    this.setMap(map);
+  }
+  /**
+  * onAdd is called when the map's panes are ready and the overlay has been
+  * added to the map.
+  */
+  photoLayer.prototype.onAdd = function() {
+
+    var div = document.createElement('div');
+    div.style.borderStyle = 'none';
+    div.style.borderWidth = '0px';
+    div.style.position = 'absolute';
+
+    // Create the img element and attach it to the div.
+    var img = document.createElement('img');
+    img.src = this.image_;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.position = 'absolute';
+    div.appendChild(img);
+
+    this.div_ = div;
+
+    // Add the element to the "overlayLayer" pane.
+    var panes = this.getPanes();
+    panes.overlayLayer.appendChild(div);
+  };
+  photoLayer.prototype.draw = function() {
+
+    // We use the south-west and north-east
+    // coordinates of the overlay to peg it to the correct position and size.
+    // To do this, we need to retrieve the projection from the overlay.
+    var overlayProjection = this.getProjection();
+
+    // Retrieve the south-west and north-east coordinates of this overlay
+    // in LatLngs and convert them to pixel coordinates.
+    // We'll use these coordinates to resize the div.
+    var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+    var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+
+    // Resize the image's div to fit the indicated dimensions.
+    var div = this.div_;
+    div.style.left = sw.x + 'px';
+    div.style.top = ne.y + 'px';
+    div.style.width = (ne.x - sw.x) + 'px';
+    div.style.height = (sw.y - ne.y) + 'px';
+  };
+  // The onRemove() method will be called automatically from the API if
+  // we ever set the overlay's map property to 'null'.
+  photoLayer.prototype.onRemove = function() {
+    this.div_.parentNode.removeChild(this.div_);
+    this.div_ = null;
+  };
+  // Set the visibility to 'hidden' or 'visible'.
+  photoLayer.prototype.hide = function() {
+    if (this.div_) {
+      // The visibility property must be a string enclosed in quotes.
+      this.div_.style.visibility = 'hidden';
+    }
+  };
+
+  photoLayer.prototype.show = function() {
+    if (this.div_) {
+      this.div_.style.visibility = 'visible';
+    }
+  };
+
+  photoLayer.prototype.toggle = function() {
+    if (this.div_) {
+      if (this.div_.style.visibility === 'hidden') {
+        this.show();
+      } else {
+        this.hide();
+      }
+    }
+  };
+
+  // Detach the map from the DOM via toggleDOM().
+  // Note that if we later reattach the map, it will be visible again,
+  // because the containing <div> is recreated in the overlay's onAdd() method.
+  photoLayer.prototype.toggleDOM = function() {
+    if (this.getMap()) {
+      // Note: setMap(null) calls OverlayView.onRemove()
+      this.setMap(null);
+    } else {
+      this.setMap(this.map_);
+    }
+  };
+  // Initialize and add the map
 }
-
-
 
     </script>
-
-    <script async defer
+       <script
     src="https://maps.googleapis.com/maps/api/js?key=<%=ENV['MAPS_API_KEY']%>&callback=initMap">
     </script>
+ 
 
     
   </body>

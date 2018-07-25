@@ -40,7 +40,7 @@ helpers do
 
   def cache_photo_data(recent_media)
     recent_media['data'].each do |media| 
-      if media['location'] != nil 
+      if media['location'] && !Photo.find_by(caption: media['caption']['text'])
       photo = Photo.new
       photo.user_id = current_user.id
       photo.latitude = media['location']['latitude']
@@ -76,7 +76,6 @@ post '/session' do
   end
 
 end
-
 
 get '/oauth/callback' do
   response = HTTParty.post(

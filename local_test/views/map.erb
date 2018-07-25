@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+       /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;  /* The height is 400 pixels */
+        width: 100%;  /* The width is the width of the web page */
+       }
+    </style>
+  </head>
+  <body>
+    <h3>My Google Maps Demo</h3>
+    <!--The div element for the map -->
+    <div id="map"></div>
+    <script>
+// Initialize and add the map
+function initMap() {
+  var start = {lat: -20.462946176945, lng: -66.824035043868};
+  // The map, centered at start
+  var map = new google.maps.Map(
+      document.getElementById('map'), {zoom: 4, center: start});
+  // The marker, positioned at start
+var locationData = <%= @location_data %>
+function generate_markers(locationData) {
+  for (let index = 0; index < locationData.length; index++) {
+    var latLng = new google.maps.LatLng(locationData[index][0],locationData[index][1])
+    var marker = new google.maps.Marker({
+      position: latLng,
+      map: map
+    })
+  }
+}
+  generate_markers(locationData)
+}
+
+
+
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=<%=ENV['MAPS_API_KEY']%>&callback=initMap">
+    </script>
+
+    
+  </body>
+</html>

@@ -59,9 +59,15 @@
   }
 }
 
+.info-window {
+  width: 200px;
+}
+
 @media (min-width: 320px) and (max-width: 480px) {
 
-
+html {
+  height: 100%;
+}
 body {
   height: 100%;
 }
@@ -86,24 +92,26 @@ header {
 .left-nav {
   height: 60px;
   width: 30px;
+  border: 1px double #fed165;
   background-color: rgba(0, 0, 0, 0.2);
   border-bottom-right-radius: 60px;
   border-top-right-radius: 60px;
   color: #d02896;
   position: absolute;
   z-index: 1;
-  top: 50%;
+  top: 47%;
 }
 .right-nav {
   height: 60px;
   width: 30px;
+  border: 1px double #fed165;
   background-color: rgba(0, 0, 0, 0.2);
   border-bottom-left-radius: 60px;
   border-top-left-radius: 60px;
   color: #d02896;
   text-align: center;
   position: absolute;
-  top: 50%;
+  top: 47%;
   right: 0;
   z-index: 1;
 }

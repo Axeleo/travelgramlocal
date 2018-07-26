@@ -3,7 +3,6 @@
 <div class="right-nav"></div>
 <div class="left-nav"></div>
 <div id="map"></div>
-
 <script>
 
 function initMap() {
@@ -12,33 +11,59 @@ function initMap() {
       document.getElementById('map'), {zoom: 8, center: start});
 
 
-  var locationData = <%= @location_data %>
+  var photoData = <%= @photo_data %>
 
   // var overlay;
   photoLayer.prototype = new google.maps.OverlayView();
 
-  function generate_markers(locationData) {
-    for (let index = 0; index < locationData.length; index++) {
-      var latLng = new google.maps.LatLng(locationData[index][1],locationData[index][2])
+  function generate_markers(photoData) {
+    for (let index = 0; index < photoData.length; index++) {
+      var latLng = new google.maps.LatLng(photoData[index][1],photoData[index][2])
+      console.log(photoData[index][0])
+      var utcSeconds = 1234567890;
+      var date = moment.unix(photoData[index][5]).toString()
+      var contentString = "<div class=\"info-window\">" + 
+        "<img src=" + photoData[index][0] + ">"+
+        "<h4>" + photoData[index][6] + "</h4>" + 
+        "<p>" + date + "</br>" +
+        photoData[index][4] + "</br>" + 
+        photoData[index][3] + 
+        "</p>" + "</div>"
+      var infoWindow = new google.maps.InfoWindow({ content: contentString });
       var marker = new google.maps.Marker({
         position: latLng,
+        icon: {
+          path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+          scale: 5
+        },
+        info: contentString,
         map: map
       })
+      google.maps.event.addListener(marker, 'click', function() {
+      infoWindow.setContent( this.info );
+      infoWindow.open( map, this );
+      });
     }
   }
-  generate_markers(locationData)
+  generate_markers(photoData)
 
-  function generate_overlays(locationData) {
-
-    for (let index = 0; index < locationData.length; index++) {
-      var bounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(locationData[index][1], locationData[index][2]),
-        new google.maps.LatLng(locationData[index][1] + 0.5, locationData[index][2] + 0.5));
-      var srcImage = locationData[index][0];
-      new photoLayer(bounds, srcImage, map);
-    }
+  function find_date(epoch) {
+    var utcSeconds = epoch;
+    var date = new Date(0); 
+    date.setUTCSeconds(utcSeconds);
+    return date
   }
-  generate_overlays(locationData)
+  // function generate_overlays(locationData) {
+
+  //   for (let index = 0; index < locationData.length; index++) {
+  //     var bounds = new google.maps.LatLngBounds(
+  //       new google.maps.LatLng(locationData[index][1], locationData[index][2]),
+  //       new google.maps.LatLng(locationData[index][1] + 0.5, locationData[index][2] + 0.5));
+  //     var srcImage = locationData[index][0];
+  //     new photoLayer(bounds, srcImage, map);
+  //   }
+  // }
+  // generate_overlays(locationData)
 
   /** constructor */
   function photoLayer(bounds, image, map) {

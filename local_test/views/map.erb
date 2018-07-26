@@ -24,23 +24,17 @@
 function initMap() {
   var start = {lat: -20.462946176945, lng: -66.824035043868};
   var map = new google.maps.Map(
-      document.getElementById('map'), {zoom: 12, center: start});
+      document.getElementById('map'), {zoom: 10, center: start});
 
-  var srcImage = 'https://scontent.cdninstagram.com/vp/8d097beb672b9d3e2a2fcb04b21869d6/5BCF40A2/t51.2885-15/e35/s150x150/21577104_349757292144992_9053600006937772032_n.jpg'
-
-  var bounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(-20.462946176945, -66.824035043868),
-    new google.maps.LatLng(-20.062946176945, -66.024035043868));
-
-  var overlay;
-  photoLayer.prototype = new google.maps.OverlayView();
-
-  overlay = new photoLayer(bounds, srcImage, map);
 
   var locationData = <%= @location_data %>
+
+  // var overlay;
+  photoLayer.prototype = new google.maps.OverlayView();
+
   function generate_markers(locationData) {
     for (let index = 0; index < locationData.length; index++) {
-      var latLng = new google.maps.LatLng(locationData[index][0],locationData[index][1])
+      var latLng = new google.maps.LatLng(locationData[index][1],locationData[index][2])
       var marker = new google.maps.Marker({
         position: latLng,
         map: map
@@ -49,6 +43,17 @@ function initMap() {
   }
   generate_markers(locationData)
 
+  function generate_overlays(locationData) {
+
+    for (let index = 0; index < locationData.length; index++) {
+      var bounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(locationData[index][1], locationData[index][2]),
+        new google.maps.LatLng(locationData[index][1] + 0.5, locationData[index][2] + 0.5));
+      var srcImage = locationData[index][0];
+      new photoLayer(bounds, srcImage, map);
+    }
+  }
+  generate_overlays(locationData)
 
   /** constructor */
   function photoLayer(bounds, image, map) {

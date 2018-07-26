@@ -36,6 +36,7 @@ helpers do
     user = current_user
     user.instagram_username = recent_media['data'].first['user']['username']
     user.profile_pic_url = recent_media['data'].first['user']['profile_picture']
+    user.save
   end
 
   def cache_photo_data(recent_media)

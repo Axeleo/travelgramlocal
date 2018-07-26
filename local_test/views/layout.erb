@@ -6,15 +6,54 @@
   <link rel='stylesheet' href='/stylesheets/main.css'>
 </head>
 <body>
-  <% if logged_in? %>
-  Logged in as <%= current_user.email %>
-  <form action="/session" method='post'>
-    <input type="hidden" name ="_method" value="delete">
+<header>
+  <div class="Navbar">
+    <div class="Navbar__Link Navbar__Link-brand">
+    <% if logged_in?  %>
+    <img class="profile-pic" src="<%= current_user.profile_pic_url%>" alt="">
+    <% else %>
+        <img class="logo" src="/images/mapLogo.png" alt="">
+    <% end %>
+      </div>
+      <div class="Navbar__Link Navbar__Link-toggle">
+        <img class="menu-img"src="/images/menu-options.png/" alt="">
+      </div>
+    <nav class="Navbar__Items">
+      <div class="Navbar__Link">
+        Create Map
+      </div>
+      <div class="Navbar__Link">
+        Longer Link
+      </div>
+      <div class="Navbar__Link">
+        <% if logged_in? %>
+          Logged in as <%= current_user.email %>
+          <form action="/session" method='post'>
+            <input type="hidden" name ="_method" value="delete">
 
-    <button>Logout</button>
-  </form>
-  <% end  %>
+            <button>Logout</button>
+          </form>
+          <% end  %>
+      </div>
+    </nav>
+    <nav class="Navbar__Items Navbar__Items--right">
+      <div class="Navbar__Link">
+        <% if logged_in? %>
+        <%else %>
+        <a href="/signup">Login</a>
+        <% end %>
+      </div>
+      <div class="Navbar__Link">
+        <a href="/about">About</a>
+      </div>
+    </nav>
+  </div>
+</header>
+  
+  <div class="wrapper">
   <%= yield %>
-
+  </div>
+<footer></footer>
+<script src="/javascripts/nav.js"></script>
 </body>
 </html>

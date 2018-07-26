@@ -6,15 +6,16 @@
 <script>
 
 function initMap() {
-  var start = {lat: -20.462946176945, lng: -66.824035043868};
+  var photoData = <%= @photo_data %>
+  var start = {lat: photoData[0][1], lng: photoData[0][2]};
   var map = new google.maps.Map(
       document.getElementById('map'), {zoom: 8, center: start});
 
-
-  var photoData = <%= @photo_data %>
-
-  // var overlay;
-  photoLayer.prototype = new google.maps.OverlayView();
+  var oms = new OverlappingMarkerSpiderfier(map, {
+    markersWontMove: true,
+    markersWontHide: true,
+    basicFormatEvents: true
+  });
 
   function generate_markers(photoData) {
     for (let index = 0; index < photoData.length; index++) {
@@ -38,10 +39,11 @@ function initMap() {
         info: contentString,
         map: map
       })
-      google.maps.event.addListener(marker, 'click', function() {
+      google.maps.event.addListener(marker, 'spider_click', function(e) { 
       infoWindow.setContent( this.info );
       infoWindow.open( map, this );
       });
+      oms.addMarker(marker);
       markersArray.push(marker)
     }
   }

@@ -42,22 +42,29 @@ function initMap() {
       infoWindow.setContent( this.info );
       infoWindow.open( map, this );
       });
+      markersArray.push(marker)
     }
   }
+
+  var markersArray = []
+  var rightMainNav = document.querySelector('.right-nav')
+  var leftMainNav = document.querySelector('.left-nav')
+  var counter = 0
+  rightMainNav.addEventListener("click", function() {
+  if (counter < markersArray.length) {
+    counter++;
+    map.panTo(markersArray[counter].position);
+    }
+  })
+
+  leftMainNav.addEventListener("click", function() {
+  if (counter > 0) {
+    counter--;
+    map.panTo(markersArray[counter].position);
+    }
+  })
+
   generate_markers(photoData)
-
-  // function generate_overlays(locationData) {
-
-  //   for (let index = 0; index < locationData.length; index++) {
-  //     var bounds = new google.maps.LatLngBounds(
-  //       new google.maps.LatLng(locationData[index][1], locationData[index][2]),
-  //       new google.maps.LatLng(locationData[index][1] + 0.5, locationData[index][2] + 0.5));
-  //     var srcImage = locationData[index][0];
-  //     new photoLayer(bounds, srcImage, map);
-  //   }
-  // }
-  // generate_overlays(locationData)
-
   /** constructor */
   function photoLayer(bounds, image, map) {
 

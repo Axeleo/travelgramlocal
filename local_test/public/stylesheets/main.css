@@ -45,6 +45,7 @@
   }
   .Navbar__ToggleShow {
     display: flex;
+    z-index: 1;
   }
   .Navbar__Link-toggle {
     align-self: flex-end;
